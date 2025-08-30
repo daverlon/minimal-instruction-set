@@ -1,0 +1,1 @@
+time ./mis input.mis
