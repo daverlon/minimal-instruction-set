@@ -3,6 +3,7 @@
 #include <string.h>
 
 #include "parser.h"
+#include "stack.h"
 
 int main(int argc, char *argv[]) {
     if (argc != 2) {
@@ -33,6 +34,8 @@ int main(int argc, char *argv[]) {
         }
     }
     free(line);
+
+    stack_clear();
 
     fclose(f);
     return 0;
