@@ -1,14 +1,41 @@
-; stack_complex.asm
-; Compute ((10 - 2) * (5 + 3)) / 4
-; Expected output: 16
+; Complex instruction test
+; Computes (((10 + 20) * 3) - (15 / 5)) + ((7 * 8) - 12)
+; Expected intermediate results shown after '; =>'
 
 PUSH 10
-PUSH 2
-SUB         ; => 8
-PUSH 5
+PUSH 20
+ADD         ; => 30
 PUSH 3
-ADD         ; => 8
-MUL         ; 8 * 8 = 64
+MUL         ; => 90
+PUSH 15
+PUSH 5
+DIV         ; => 3
+SUB         ; => 87
+PRINT       ; => 87
+
+PUSH 7
+PUSH 8
+MUL         ; => 56
+PUSH 12
+SUB         ; => 44
+PRINT       ; => 44
+
+; Mix multiple operations
+PUSH 5
+PUSH 10
+ADD         ; => 15
+PUSH 2
+MUL         ; => 30
+PUSH 7
+DIV         ; => 4
+PRINT       ; => 4
+
+; Final accumulation test
+PUSH 1
+PUSH 2
+ADD         ; => 3
+PUSH 3
+ADD         ; => 6
 PUSH 4
-DIV         ; 64 / 4 = 16
-PRINT
+ADD         ; => 10
+PRINT       ; => 10
