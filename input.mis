@@ -1,41 +1,48 @@
-; Complex instruction test
-; Computes (((10 + 20) * 3) - (15 / 5)) + ((7 * 8) - 12)
-; Expected intermediate results shown after '; =>'
+; Test File: test_all.mis
+; Expected outputs commented on the right
 
+; ---------- Basic arithmetic ----------
 PUSH 10
+PUSH 5
+ADD          ; 10 + 5 = 15
+PRINT        ; 15
+
 PUSH 20
-ADD         ; => 30
 PUSH 3
-MUL         ; => 90
-PUSH 15
-PUSH 5
-DIV         ; => 3
-SUB         ; => 87
-PRINT       ; => 87
+SUB          ; 20 - 3 = 17
+PRINT        ; 17
 
+PUSH 6
 PUSH 7
-PUSH 8
-MUL         ; => 56
-PUSH 12
-SUB         ; => 44
-PRINT       ; => 44
+MUL          ; 6 * 7 = 42
+PRINT        ; 42
 
-; Mix multiple operations
+PUSH 100
+PUSH 25
+DIV          ; 100 / 25 = 4
+PRINT        ; 4
+
+; ---------- DUP, NEG ----------
+PUSH 9
+DUP          ; duplicate 9
+NEG          ; negate top (-9)
+PRINT        ; -9
+PRINT        ; 9
+
+; ---------- MOD ----------
+PUSH 23
 PUSH 5
-PUSH 10
-ADD         ; => 15
-PUSH 2
-MUL         ; => 30
-PUSH 7
-DIV         ; => 4
-PRINT       ; => 4
+MOD          ; 23 % 5 = 3
+PRINT        ; 3
 
-; Final accumulation test
+; ---------- SWAP ----------
 PUSH 1
 PUSH 2
-ADD         ; => 3
-PUSH 3
-ADD         ; => 6
-PUSH 4
-ADD         ; => 10
-PRINT       ; => 10
+SWAP         ; stack top 2 <-> 1
+PRINT        ; 1
+PRINT        ; 2
+
+; ---------- POP ----------
+PUSH 99
+POP          ; remove 99
+; stack is empty now, should not print

@@ -18,13 +18,21 @@ typedef struct
     enum command_type type;
 } command_map_t;
 
-command_map_t commands[] = {
+command_map_t commands[] = 
+{
     {"PUSH", CMD_PUSH},
     {"ADD", CMD_ADD},
     {"SUB", CMD_SUB},
     {"MUL", CMD_MUL},
     {"DIV", CMD_DIV},
-    {"PRINT", CMD_PRINT}};
+    {"PRINT", CMD_PRINT},
+
+    {"DUP", CMD_DUP},
+    {"SWAP", CMD_SWAP},
+    {"NEG", CMD_NEG},
+    {"MOD", CMD_MOD},
+    {"POP", CMD_POP},
+};
 
 enum command_type get_command_type(const char *command)
 {
@@ -39,30 +47,49 @@ enum command_type get_command_type(const char *command)
     return -1;
 }
 
-static enum token_type expected_token = TOKEN_COMMAND;
 bool parse_token(const char *token, instruction_t *out_instr)
 {
+    static enum token_type expected_token = TOKEN_COMMAND;
+
     switch (expected_token)
     {
     case TOKEN_COMMAND:
     {
         enum command_type cmd = get_command_type(token);
-        if (cmd == CMD_INVALID)
+        
+        switch (cmd) 
         {
-            fprintf(stderr, "Invalid command found: %s\n", token);
-            exit(1);
-        }
-        else if (cmd == CMD_PUSH)
-        {
-            out_instr->cmd = cmd;
-            expected_token = TOKEN_NUMBER;
-            return false;
-        }
-        else
-        {
-            out_instr->cmd = cmd;
-            out_instr->value = 0;
-            return true;
+            case CMD_PUSH: 
+            {
+                out_instr->cmd = cmd;
+                expected_token = TOKEN_NUMBER;
+                return false;
+            }
+
+            case CMD_ADD:
+            case CMD_SUB:
+            case CMD_MUL:
+            case CMD_DIV:
+            case CMD_PRINT:
+
+            case CMD_DUP:
+            case CMD_SWAP:
+            case CMD_NEG:
+            case CMD_MOD:
+            case CMD_POP:
+            {
+                out_instr->cmd = cmd;
+                out_instr->value = 0;
+                return true;
+            }
+
+            case CMD_INVALID:
+            default:
+            {
+                fprintf(stderr, "Invalid command found: %s\n", token);
+                exit(1);
+            }
+        
         }
     }
     case TOKEN_NUMBER:
@@ -74,7 +101,8 @@ bool parse_token(const char *token, instruction_t *out_instr)
     default:
     {
         fprintf(stderr, "Invalid token found.\n");
-        return false;
+        exit(1);
     }
     }
+    exit(1);
 }

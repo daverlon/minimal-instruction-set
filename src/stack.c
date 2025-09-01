@@ -14,6 +14,17 @@ void stack_init(my_stack_t *stack)
     }
 }
 
+void stack_clear(my_stack_t *stack)
+{
+    if (stack->data != NULL)
+    {
+        free(stack->data);
+        stack->data = NULL;
+    }
+    stack->capacity = 0;
+    stack->length = 0;
+}
+
 int stack_length(const my_stack_t *stack)
 {
     return stack->length;
@@ -61,15 +72,4 @@ int stack_pop(my_stack_t *stack)
 int stack_peak(my_stack_t *stack)
 {
     return stack->data[stack->length - 1];
-}
-
-void stack_clear(my_stack_t *stack)
-{
-    if (stack->data != NULL)
-    {
-        free(stack->data);
-        stack->data = NULL;
-    }
-    stack->capacity = 0;
-    stack->length = 0;
 }
