@@ -1,5 +1,5 @@
 #pragma once
 
-#include "stack.h"
+#include "instruction.h"
 
-void parse_token(my_stack_t *stack, const char* token);
+bool parse_token(const char *token, instruction_t *out_instr);

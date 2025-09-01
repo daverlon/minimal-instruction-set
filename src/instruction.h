@@ -11,8 +11,8 @@ enum command_type
     CMD_PRINT
 };
 
-struct instruction
+typedef struct
 {
     enum command_type cmd;
     int value; // only used for PUSH
-};
+} instruction_t;

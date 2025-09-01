@@ -2,8 +2,22 @@
 #include <stdlib.h>
 #include <string.h>
 
+#include "vm.h"
+#include "instruction.h"
+
 #include "parser.h"
-#include "stack.h"
+#include "interpreter.h"
+
+static FILE *f = NULL;
+static vm_t vm = {0};
+static char *line = NULL;
+
+void cleanup(void)
+{
+    stack_clear(&vm.stack);
+    if (f != NULL) fclose(f);
+    if (line != NULL) free(line);
+}
 
 int main(int argc, char *argv[])
 {
@@ -13,20 +27,19 @@ int main(int argc, char *argv[])
         return 1;
     }
 
-    FILE *f = fopen(argv[1], "r");
+    f = fopen(argv[1], "r");
     if (f == NULL)
     {
         fprintf(stderr, "Failed to open file.\n");
         return 1;
     }
 
-    my_stack_t stack = {0};
-    stack_init(&stack);
+    atexit(cleanup);
 
+    stack_init(&vm.stack);
     const char *delim = " ;,\t\n";
-
-    char *line = NULL;
     size_t size = 0;
+
     while (getline(&line, &size, f) != EOF)
     {
         char *comment = strchr(line, ';');
@@ -37,16 +50,14 @@ int main(int argc, char *argv[])
         char *tok = strtok(line, delim);
         while (tok != NULL)
         {
-
-            parse_token(&stack, tok);
+            instruction_t instr;
+            bool ready = parse_token(tok, &instr);
+            if (ready)
+                execute_instruction(&vm, instr);
             // fprintf(stdout, "%s\n", tok);
             tok = strtok(NULL, delim);
         }
     }
-    free(line);
 
-    stack_clear(&stack);
-
-    fclose(f);
-    return 0;
+    exit(0);
 }

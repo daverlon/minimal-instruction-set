@@ -13,6 +13,6 @@ void stack_init(my_stack_t *stack);
 
 int stack_length(const my_stack_t *stack);
 void stack_push(my_stack_t *stack, int value);
-bool stack_pop(my_stack_t *stack, int *out);
+int stack_pop(my_stack_t *stack);
 int stack_peak(my_stack_t *stack);
 void stack_clear(my_stack_t *stack);

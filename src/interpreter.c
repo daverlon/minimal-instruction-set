@@ -1,26 +1,13 @@
 #include <stdio.h>
 #include <stdlib.h>
 
-#include "stack.h"
+#include "vm.h"
 #include "instruction.h"
 
-struct my_stack_t;
-
-int pop_value(my_stack_t *stack)
+void execute_instruction(vm_t *vm, const instruction_t instr)
 {
-    int value = 0;
-    bool success = stack_pop(stack, &value);
-    if (!success)
-    {
-        stack_clear(stack);
-        exit(1);
-    }
-    return value;
-    ;
-}
+    my_stack_t *stack = &vm->stack;
 
-void execute_instruction(my_stack_t *stack, struct instruction instr)
-{
     switch (instr.cmd)
     {
     case CMD_PUSH:
@@ -28,30 +15,34 @@ void execute_instruction(my_stack_t *stack, struct instruction instr)
         break;
     case CMD_ADD:
     {
-        stack_push(stack, pop_value(stack) + pop_value(stack));
+        int a = stack_pop(stack);
+        int b = stack_pop(stack);
+        stack_push(stack, b + a);
         break;
     }
     case CMD_SUB:
     {
-        int a = pop_value(stack);
-        int b = pop_value(stack);
+        int a = stack_pop(stack);
+        int b = stack_pop(stack);
         stack_push(stack, b - a);
         break;
     }
     case CMD_MUL:
     {
-        stack_push(stack, pop_value(stack) * pop_value(stack));
+        int a = stack_pop(stack);
+        int b = stack_pop(stack);
+        stack_push(stack, b * a);
         break;
     }
     case CMD_DIV:
     {
-        int a = pop_value(stack);
-        int b = pop_value(stack);
+        int a = stack_pop(stack);
+        int b = stack_pop(stack);
         stack_push(stack, b / a);
         break;
     }
     case CMD_PRINT:
-        fprintf(stdout, "%d\n", pop_value(stack));
+        fprintf(stdout, "%d\n", stack_pop(stack));
         break;
     default:
         fprintf(stderr, "Invalid instruction command.\n");

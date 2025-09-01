@@ -1,8 +1,8 @@
 #include <stdio.h>
 #include <string.h>
 #include <stdlib.h>
+#include <stdbool.h>
 
-#include "instruction.h"
 #include "interpreter.h"
 
 enum token_type
@@ -12,13 +12,13 @@ enum token_type
     TOKEN_NUMBER
 };
 
-struct command_map
+typedef struct
 {
     const char *name;
     enum command_type type;
-};
+} command_map_t;
 
-struct command_map commands[] = {
+command_map_t commands[] = {
     {"PUSH", CMD_PUSH},
     {"ADD", CMD_ADD},
     {"SUB", CMD_SUB},
@@ -28,7 +28,7 @@ struct command_map commands[] = {
 
 enum command_type get_command_type(const char *command)
 {
-    int n_commands = sizeof(commands) / sizeof(struct command_map);
+    int n_commands = sizeof(commands) / sizeof(command_map_t);
     for (int i = 0; i < n_commands; i++)
     {
         if (!strcmp(command, commands[i].name))
@@ -40,9 +40,7 @@ enum command_type get_command_type(const char *command)
 }
 
 static enum token_type expected_token = TOKEN_COMMAND;
-static struct instruction instr = {};
-
-void parse_token(my_stack_t *stack, const char *token)
+bool parse_token(const char *token, instruction_t *out_instr)
 {
     switch (expected_token)
     {
@@ -52,29 +50,31 @@ void parse_token(my_stack_t *stack, const char *token)
         if (cmd == CMD_INVALID)
         {
             fprintf(stderr, "Invalid command found: %s\n", token);
-            stack_clear(stack);
             exit(1);
-            break;
         }
         else if (cmd == CMD_PUSH)
         {
-            instr.cmd = cmd;
+            out_instr->cmd = cmd;
             expected_token = TOKEN_NUMBER;
+            return false;
         }
         else
         {
-            instr.cmd = cmd;
-            instr.value = 0;
-            execute_instruction(stack, instr);
+            out_instr->cmd = cmd;
+            out_instr->value = 0;
+            return true;
         }
-        break;
     }
     case TOKEN_NUMBER:
-        instr.value = atoi(token);
-        execute_instruction(stack, instr);
+    {
+        out_instr->value = atoi(token);
         expected_token = TOKEN_COMMAND;
-        break;
+        return true;
+    }
     default:
+    {
         fprintf(stderr, "Invalid token found.\n");
+        return false;
+    }
     }
 }

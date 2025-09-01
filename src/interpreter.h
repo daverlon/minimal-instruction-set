@@ -1,6 +1,6 @@
 #pragma once
 
 #include "instruction.h"
-#include "stack.h"
+#include "vm.h"
 
-void execute_instruction(my_stack_t *stack, struct instruction instr);
+void execute_instruction(vm_t *vm, const instruction_t instr);
