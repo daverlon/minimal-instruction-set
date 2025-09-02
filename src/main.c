@@ -1,6 +1,7 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
+#include <ctype.h>
 
 #include "vm.h"
 #include "instruction.h"
@@ -12,7 +13,7 @@ static FILE *f = NULL;
 static vm_t vm = {0};
 static char *line = NULL;
 
-void cleanup(void)
+static void cleanup(void)
 {
     stack_clear(&vm.stack);
     if (f != NULL) fclose(f);
@@ -50,6 +51,10 @@ int main(int argc, char *argv[])
         char *tok = strtok(line, delim);
         while (tok != NULL)
         {
+            for (int c = 0; c < strlen(tok); c++)
+            {
+                tok[c] = toupper(tok[c]);
+            }
             instruction_t instr;
             bool ready = parse_token(tok, &instr);
             if (ready)
