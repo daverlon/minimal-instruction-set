@@ -2,6 +2,7 @@
 #include <string.h>
 #include <stdlib.h>
 #include <stdbool.h>
+#include <ctype.h>
 
 #include "interpreter.h"
 
@@ -94,6 +95,14 @@ bool parse_token(const char *token, instruction_t *out_instr)
     }
     case TOKEN_NUMBER:
     {
+        for (int c = 0; c < strlen(token); c++)
+        {
+            if (!isdigit(token[c]))
+            {
+                fprintf(stderr, "Expected digit found character: %c.\n", token[c]);
+                exit(1);
+            }
+        }
         out_instr->value = atoi(token);
         expected_token = TOKEN_COMMAND;
         return true;

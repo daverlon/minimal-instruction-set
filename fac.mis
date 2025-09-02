@@ -1,0 +1,10 @@
+; Compute 4! (4 × 3 × 2 × 1) 
+
+push 4
+push 3
+mul
+push 2
+mul
+push 1
+mul
+print

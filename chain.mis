@@ -1,0 +1,29 @@
+; ((7 + 3) * 2 - 5) / 3
+
+push 7
+push 3
+add
+push 2
+mul
+push 5
+sub
+push 3
+div
+print
+
+; 3 * 4^2 + 5 * 2 - 7 
+
+push 4
+push 4
+mul
+push 3
+mul
+push 5
+push 2
+mul
+add
+push 5
+neg
+add
+print
+
