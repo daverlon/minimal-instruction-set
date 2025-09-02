@@ -52,9 +52,7 @@ int main(int argc, char *argv[])
         while (tok != NULL)
         {
             for (int c = 0; c < strlen(tok); c++)
-            {
                 tok[c] = toupper(tok[c]);
-            }
             instruction_t instr;
             bool ready = parse_token(tok, &instr);
             if (ready)
