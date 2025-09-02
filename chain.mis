@@ -11,6 +11,13 @@ push 3
 div
 print
 
+push 0
+print
+push 0
+print
+push 0
+print
+
 ; 3 * 4^2 + 5 * 2 - 7 
 
 push 4
@@ -22,8 +29,63 @@ push 5
 push 2
 mul
 add
-push 5
-neg
-add
+push 7
+sub
 print
 
+push 0
+print
+push 0
+print
+push 0
+print
+
+; ((3*4^2 + 5*2) - 7 + (2*3 + 4*5) * 2 - 6) + (1 + 2*3 + 4*5 - 10) * 3
+
+; (3*4^2 + 5*2)
+; 58
+push 4
+push 4
+mul
+push 3
+mul
+push 5
+push 2
+mul
+add
+
+; (1 + 2*3 + 4*5 - 10) * 3
+; 51
+push 2
+push 3
+mul
+push 4 
+push 5
+mul
+add
+push 1
+add
+push 10
+sub
+push 3
+mul
+
+; (2*3 + 4*5) * 2 - 6
+push 2
+push 3
+mul
+push 4
+push 5
+mul
+add
+push 2
+mul
+push 6
+sub
+
+add
+push 7
+sub
+add
+print
+; finishe!
