@@ -5,7 +5,10 @@
 
 typedef struct {
     size_t pc;
+    char* file_name;
+    size_t file_line;
+
     my_stack_t stack;
 } vm_t;
 
-void vm_exit(vm_t *vm, int status);
+void vm_abort(vm_t *vm);

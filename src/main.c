@@ -17,6 +17,7 @@ static void cleanup(void)
 {
     program_clear(&prog);
     stack_clear(&vm.stack);
+    if (vm.file_name != NULL) free(vm.file_name);
     if (f != NULL) fclose(f);
     if (line != NULL) free(line);
 }
@@ -36,6 +37,9 @@ int main(int argc, char *argv[])
         return 1;
     }
 
+    vm.file_name = malloc(sizeof(char)*strlen(argv[1]));
+    vm.file_line = 0;
+
     atexit(cleanup);
     
     program_init(&prog);
@@ -45,6 +49,7 @@ int main(int argc, char *argv[])
 
     while (getline(&line, &size, f) != EOF)
     {
+        vm.file_line++;
         char *comment = strchr(line, ';');
         if (comment != NULL)
             *comment = '\0';
@@ -56,6 +61,8 @@ int main(int argc, char *argv[])
             for (int c = 0; tok[c] != '\0'; c++)
                 tok[c] = toupper(tok[c]);
             instruction_t instr;
+            instr.file_name = vm.file_name;
+            instr.file_line = vm.file_line;
             bool ready = parse_token(tok, &instr);
             if (ready)
                 program_add_instruction(&prog, instr);

@@ -65,7 +65,7 @@ bool parse_token(const char *token, instruction_t *out_instr)
             case CMD_INVALID:
             default:
             {
-                fprintf(stderr, "Invalid command found: %s\n", token);
+                fprintf(stderr, "Invalid command found: %s at line %zu in file %s\n", token, out_instr->file_line, out_instr->file_name);
                 exit(1);
             }
         

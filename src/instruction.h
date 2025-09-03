@@ -28,6 +28,9 @@ typedef struct
 
 typedef struct
 {
+    char* file_name;
+    size_t file_line;
+
     enum command_type cmd;
     int value;
 } instruction_t;

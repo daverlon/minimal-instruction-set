@@ -27,7 +27,7 @@ void execute_instruction(vm_t *vm, const instruction_t instr)
         if (len <= 1)
         {
             fprintf(stderr, "Tried to swap when stack length = %zu\n", len);
-            exit(1);
+            vm_abort(vm);
         }
         int *a = &stack->data[len - 1];
         int *b = &stack->data[len - 2];
@@ -41,7 +41,7 @@ void execute_instruction(vm_t *vm, const instruction_t instr)
         if (stack->length <= 0)
         {
             fprintf(stderr, "Tried to neg when stack length = %zu\n", stack->length);
-            exit(1);
+            vm_abort(vm);
         }
         int *a = &stack->data[stack->length - 1];
         *a *= -1;
@@ -95,7 +95,7 @@ void execute_instruction(vm_t *vm, const instruction_t instr)
     default:
     {
         fprintf(stderr, "Invalid instruction command.\n");
-        break;
+        vm_abort(vm);
     }
     }
 }

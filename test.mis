@@ -1,0 +1,32 @@
+push 5
+push 3
+print
+print
+
+; (8^2 + 55) - (2 + 8) / 5 + 4 * 2
+
+push 8
+push 8
+mul
+push 55
+add
+
+push 2
+push 8
+add
+push 5
+div
+
+sub
+
+push 4
+push 2
+mul
+add
+dup
+print
+dup
+print
+dup
+print
+print
