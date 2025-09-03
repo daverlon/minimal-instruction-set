@@ -5,8 +5,6 @@
 
 #include "program.h"
 #include "vm.h"
-#include "instruction.h"
-
 #include "parser.h"
 #include "interpreter.h"
 
@@ -14,7 +12,6 @@ static FILE *f = NULL;
 static char *line = NULL;
 static program_t prog = {0};
 static vm_t vm = {0};
-
 
 static void cleanup(void)
 {
@@ -56,15 +53,21 @@ int main(int argc, char *argv[])
         char *tok = strtok(line, delim);
         while (tok != NULL)
         {
-            for (int c = 0; c < *tok; c++)
+            for (int c = 0; tok[c] != '\0'; c++)
                 tok[c] = toupper(tok[c]);
             instruction_t instr;
             bool ready = parse_token(tok, &instr);
             if (ready)
-                execute_instruction(&vm, instr);
+                program_add_instruction(&prog, instr);
             // fprintf(stdout, "%s\n", tok);
             tok = strtok(NULL, delim);
         }
+    }
+
+    for (vm.pc = 0; vm.pc < prog.length; vm.pc++)
+    {
+        instruction_t *instr = &prog.instructions[vm.pc];
+        execute_instruction(&vm, *instr);
     }
 
     exit(0);

@@ -4,35 +4,13 @@
 #include <stdbool.h>
 #include <ctype.h>
 
+#include "instruction.h"
 #include "interpreter.h"
 
-enum token_type
-{
-    TOKEN_INVALID = -1,
-    TOKEN_COMMAND,
-    TOKEN_NUMBER
-};
-
-typedef struct
-{
-    const char *name;
-    enum command_type type;
-} command_map_t;
-
-command_map_t commands[] = 
-{
-    {"PUSH", CMD_PUSH},
-    {"ADD", CMD_ADD},
-    {"SUB", CMD_SUB},
-    {"MUL", CMD_MUL},
-    {"DIV", CMD_DIV},
-    {"PRINT", CMD_PRINT},
-
-    {"DUP", CMD_DUP},
-    {"SWAP", CMD_SWAP},
-    {"NEG", CMD_NEG},
-    {"MOD", CMD_MOD},
-    {"POP", CMD_POP},
+command_map_t commands[] = {
+    #define MAP_DEF(name) { #name, CMD_##name },
+    COMMAND_LIST(MAP_DEF)
+    #undef MAP_DEF
 };
 
 enum command_type get_command_type(const char *command)
@@ -95,11 +73,11 @@ bool parse_token(const char *token, instruction_t *out_instr)
     }
     case TOKEN_NUMBER:
     {
-        for (int c = 0; c < *token; c++)
+        for (int c = 0; token[c] != '\0'; c++)
         {
             if (!isdigit(token[c]))
             {
-                fprintf(stderr, "Expected digit found character: %c.\n", token[c]);
+                fprintf(stderr, "Expected digit found character: '%c'\n", token[c]);
                 exit(1);
             }
         }

@@ -1,27 +1,40 @@
 #pragma once
 
-enum command_type
-{
+#define COMMAND_LIST(X) \
+    X(PUSH)  \
+    X(ADD)   \
+    X(SUB)   \
+    X(MUL)   \
+    X(DIV)   \
+    X(PRINT) \
+    X(DUP)   \
+    X(SWAP)  \
+    X(NEG)   \
+    X(MOD)   \
+    X(POP)
+
+enum command_type {
     CMD_INVALID = -1,
-
-    // part 1
-    CMD_PUSH,
-    CMD_ADD,
-    CMD_SUB,
-    CMD_MUL,
-    CMD_DIV,
-    CMD_PRINT,
-
-    // part 2
-    CMD_DUP,
-    CMD_SWAP,
-    CMD_NEG,
-    CMD_MOD,
-    CMD_POP,
+    #define ENUM_DEF(name) CMD_##name,
+    COMMAND_LIST(ENUM_DEF)
+    #undef ENUM_DEF
 };
 
 typedef struct
 {
+    const char *name;
+    enum command_type type;
+} command_map_t;
+
+typedef struct
+{
     enum command_type cmd;
-    int value; // only used for PUSH
+    int value;
 } instruction_t;
+
+enum token_type
+{
+    TOKEN_INVALID = -1,
+    TOKEN_COMMAND,
+    TOKEN_NUMBER
+};
