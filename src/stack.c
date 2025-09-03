@@ -32,7 +32,7 @@ int stack_length(const my_stack_t *stack)
 
 void stack_push(my_stack_t *stack, int value)
 {
-    if (stack->capacity == 0)
+    if (stack->capacity == 0 || stack->data == NULL)
     {
         stack->data = malloc(sizeof(int) * 2);
         stack->capacity = 2;

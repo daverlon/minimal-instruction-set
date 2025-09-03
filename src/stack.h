@@ -5,8 +5,8 @@
 typedef struct
 {
     int *data;
-    int capacity;
-    int length;
+    size_t capacity;
+    size_t length;
 } my_stack_t;
 
 void stack_init(my_stack_t *stack);

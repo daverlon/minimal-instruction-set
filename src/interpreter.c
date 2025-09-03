@@ -23,10 +23,10 @@ void execute_instruction(vm_t *vm, const instruction_t instr)
     }
     case CMD_SWAP:
     {
-        int len = stack->length;
+        size_t len = stack->length;
         if (len <= 1)
         {
-            fprintf(stderr, "Tried to swap when stack length = %d\n", len);
+            fprintf(stderr, "Tried to swap when stack length = %zu\n", len);
             exit(1);
         }
         int *a = &stack->data[len - 1];
@@ -40,8 +40,8 @@ void execute_instruction(vm_t *vm, const instruction_t instr)
     {
         if (stack->length <= 0)
         {
-            fprintf(stderr, "Tried to neg when stack length = %d\n", stack->length);
-            exti(1);
+            fprintf(stderr, "Tried to neg when stack length = %zu\n", stack->length);
+            exit(1);
         }
         int *a = &stack->data[stack->length - 1];
         *a *= -1;

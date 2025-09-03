@@ -3,6 +3,7 @@
 #include <string.h>
 #include <ctype.h>
 
+#include "program.h"
 #include "vm.h"
 #include "instruction.h"
 
@@ -10,11 +11,14 @@
 #include "interpreter.h"
 
 static FILE *f = NULL;
-static vm_t vm = {0};
 static char *line = NULL;
+static program_t prog = {0};
+static vm_t vm = {0};
+
 
 static void cleanup(void)
 {
+    program_clear(&prog);
     stack_clear(&vm.stack);
     if (f != NULL) fclose(f);
     if (line != NULL) free(line);
@@ -36,7 +40,8 @@ int main(int argc, char *argv[])
     }
 
     atexit(cleanup);
-
+    
+    program_init(&prog);
     stack_init(&vm.stack);
     const char *delim = " ;,\t\n";
     size_t size = 0;
