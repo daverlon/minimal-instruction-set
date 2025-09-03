@@ -95,7 +95,7 @@ bool parse_token(const char *token, instruction_t *out_instr)
     }
     case TOKEN_NUMBER:
     {
-        for (int c = 0; c < strlen(token); c++)
+        for (int c = 0; c < *token; c++)
         {
             if (!isdigit(token[c]))
             {

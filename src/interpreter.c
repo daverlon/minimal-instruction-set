@@ -38,6 +38,11 @@ void execute_instruction(vm_t *vm, const instruction_t instr)
     } 
     case CMD_NEG:
     {
+        if (stack->length <= 0)
+        {
+            fprintf(stderr, "Tried to neg when stack length = %d\n", stack->length);
+            exti(1);
+        }
         int *a = &stack->data[stack->length - 1];
         *a *= -1;
         break;
