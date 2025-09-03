@@ -1,0 +1,12 @@
+:main
+    PUSH 5
+   ; JMP loop
+
+:loop
+    PUSH 1
+    SUB
+   ; JMPZ end
+   ; JMP loop
+
+:end
+    PRINT

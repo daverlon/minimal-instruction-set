@@ -28,10 +28,30 @@ enum command_type get_command_type(const char *command)
 
 bool parse_token(const char *token, instruction_t *out_instr)
 {
-    static enum token_type expected_token = TOKEN_COMMAND;
+    static enum token_type expected_token = TOKEN_LABEL;
 
     switch (expected_token)
     {
+    case TOKEN_LABEL:
+    {
+        if (token[0] == ':')
+        {
+            fprintf(stdout, "Found label: %s\n", token+1);
+            out_instr->cmd = CMD_DEClARE_LABEL;
+            size_t name_len = strlen(token + 1);
+            if (out_instr->symbol_name != NULL)
+                free(out_instr->symbol_name);
+            out_instr->symbol_name = strdup(token+1);
+
+            expected_token = TOKEN_COMMAND;
+            return true;
+        }
+        else
+        {
+            // maybe this is a command?
+            expected_token = TOKEN_COMMAND;
+        }
+    }
     case TOKEN_COMMAND:
     {
         enum command_type cmd = get_command_type(token);
@@ -59,6 +79,7 @@ bool parse_token(const char *token, instruction_t *out_instr)
             {
                 out_instr->cmd = cmd;
                 out_instr->value = 0;
+                expected_token = TOKEN_LABEL;
                 return true;
             }
 
@@ -82,7 +103,8 @@ bool parse_token(const char *token, instruction_t *out_instr)
             }
         }
         out_instr->value = atoi(token);
-        expected_token = TOKEN_COMMAND;
+        // expected_token = TOKEN_COMMAND;
+        expected_token = TOKEN_LABEL;
         return true;
     }
     default:
@@ -91,5 +113,4 @@ bool parse_token(const char *token, instruction_t *out_instr)
         exit(1);
     }
     }
-    exit(1);
 }

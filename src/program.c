@@ -30,7 +30,17 @@ void program_add_instruction(program_t *prog, instruction_t instr)
 
 void program_clear(program_t *prog)
 {
+    size_t n = prog->length;
+    for (int i = 0; i < n; i++)
+    {
+        if (prog->instructions[i].symbol_name != NULL)
+        {
+            fprintf(stdout, "Destroying %s\n", prog->instructions[i].symbol_name);
+            free(prog->instructions[i].symbol_name);
+        }
+    }
     if (prog->instructions != NULL) free(prog->instructions);
+    
     prog->capacity = 0;
     prog->length = 0;
 }

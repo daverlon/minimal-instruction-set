@@ -7,14 +7,17 @@
 #include "vm.h"
 #include "parser.h"
 #include "interpreter.h"
+#include "symbol.h"
 
 static FILE *f = NULL;
 static char *line = NULL;
 static program_t prog = {0};
 static vm_t vm = {0};
+static symbol_table_t sym_tab = {0};
 
 static void cleanup(void)
 {
+    symbol_table_clear(&sym_tab);
     program_clear(&prog);
     stack_clear(&vm.stack);
     if (vm.file_name != NULL) free(vm.file_name);
@@ -37,7 +40,8 @@ int main(int argc, char *argv[])
         return 1;
     }
 
-    vm.file_name = malloc(sizeof(char)*strlen(argv[1]));
+    vm.file_name = malloc(strlen(argv[1]) + 1);
+    strcpy(vm.file_name, argv[1]);
     vm.file_line = 0;
 
     atexit(cleanup);

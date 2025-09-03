@@ -10,6 +10,11 @@ void execute_instruction(vm_t *vm, const instruction_t instr)
 
     switch (instr.cmd)
     {
+    case CMD_DEClARE_LABEL:
+    {
+        fprintf(stdout, "Instruction declare label: %s\n", instr.symbol_name);
+        break;
+    }
     case CMD_PUSH:
     {
         stack_push(stack, instr.value);
