@@ -1,6 +1,7 @@
 #include "instruction.h"
 
 #include <string.h>
+#include <stdbool.h>
 
 command_map_t commands[] = {
     #define MAP_DEF(name) { #name, CMD_##name },
@@ -33,3 +34,21 @@ const char *token_names[] = {
     TOKEN_LIST(STR_DEF)
     #undef STR_DEF
 };
+
+#define STR_DEF(name) #name,
+const char *reserved_keywords[] = {
+    // "START",
+    COMMAND_LIST(STR_DEF)
+};
+
+static const size_t n_reserved_keywords = sizeof(reserved_keywords) / sizeof(reserved_keywords[0]);
+
+bool is_reserved_keyword(const char* str)
+{
+    for (int i = 0; i < n_reserved_keywords; i++)
+    {
+        if (!strcmp(str, reserved_keywords[i]))
+            return true;
+    }
+    return false;
+}

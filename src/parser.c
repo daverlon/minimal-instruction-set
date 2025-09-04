@@ -28,6 +28,11 @@ bool parse_token(const char *token, instruction_t *out_instr)
                     exit(1);
                 }
             }
+            if (is_reserved_keyword(token+1))
+            {
+                fprintf(stderr, "Not allowed to use reserved keyword \"%s\" for label, in line %zu, file %s\n", token+1, out_instr->file_line, out_instr->file_name);
+                exit(1);
+            }
             // fprintf(stdout, "Found label: %s\n", token+1);
             out_instr->cmd = CMD_DEClARE_LABEL;
             size_t name_len = strlen(token + 1);
@@ -67,6 +72,9 @@ bool parse_token(const char *token, instruction_t *out_instr)
             case CMD_NEG:
             case CMD_MOD:
             case CMD_POP:
+
+            case CMD_RET:
+            case CMD_HALT:
             {
                 out_instr->cmd = cmd;
                 out_instr->value = 0;
@@ -74,6 +82,7 @@ bool parse_token(const char *token, instruction_t *out_instr)
                 return true;
             }
 
+            case CMD_CALL:
             case CMD_JMP:
             case CMD_JZ:
             case CMD_JNZ:

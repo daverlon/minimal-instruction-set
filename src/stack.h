@@ -14,5 +14,5 @@ void stack_clear(my_stack_t *stack);
 
 int stack_length(const my_stack_t *stack);
 void stack_push(my_stack_t *stack, int value);
-int stack_pop(my_stack_t *stack);
-int stack_peak(my_stack_t *stack);
+bool stack_pop(my_stack_t *stack, int *out);
+bool stack_peak(my_stack_t *stack, int *out);

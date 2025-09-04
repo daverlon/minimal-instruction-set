@@ -7,9 +7,15 @@
 #include "instruction.h"
 #include "program.h"
 
+static void print_runtime_error(instruction_t instr)
+{
+    fprintf(stderr, "Runtime error at line %zu, file %s\n", instr.file_line, instr.file_name);
+}
+
 void execute_instruction(vm_t *vm, const instruction_t instr, const symbol_table_t *sym_tab)
 {
-    my_stack_t *stack = &vm->stack;
+    my_stack_t *stack = &vm->data_stack;
+    my_stack_t *call_stack = &vm->call_stack;
 
     switch (instr.cmd)
     {
@@ -25,7 +31,14 @@ void execute_instruction(vm_t *vm, const instruction_t instr, const symbol_table
     }
     case CMD_DUP:
     {
-        int dup_val = stack_peak(stack);
+        int dup_val = 0;
+        bool success = stack_peak(stack, &dup_val);
+        if (!success)
+        {
+            print_runtime_error(instr);
+            fprintf(stderr, "Runtime error at line %zu, file %s\n", instr.file_line, instr.file_name);
+            exit(1);
+        }
         stack_push(stack, dup_val);
         break;
     }
@@ -43,7 +56,7 @@ void execute_instruction(vm_t *vm, const instruction_t instr, const symbol_table
         *b = *a ^ *b;
         *a = *a ^ *b;
         break;
-    } 
+    }
     case CMD_NEG:
     {
         if (stack->length <= 0)
@@ -57,52 +70,106 @@ void execute_instruction(vm_t *vm, const instruction_t instr, const symbol_table
     }
     case CMD_MOD:
     {
-        int a = stack_pop(stack);
-        int b = stack_pop(stack);
+        int a = 0;
+        int b = 0;
+        bool success_a = stack_pop(stack, &a);
+        bool success_b = stack_pop(stack, &b);
+        if (!success_a || !success_b)
+        {
+            print_runtime_error(instr);
+            exit(1);
+        }
         stack_push(stack, b % a);
         break;
     }
     case CMD_POP:
     {
-        stack_pop(stack);
+        int a = 0;
+        bool success = stack_pop(stack, &a);
+        if (!success)
+        {
+            print_runtime_error(instr);
+            exit(1);
+        }
         break;
     }
     case CMD_ADD:
     {
-        int a = stack_pop(stack);
-        int b = stack_pop(stack);
+        int a = 0;
+        int b = 0;
+        bool success_a = stack_pop(stack, &a);
+        bool success_b = stack_pop(stack, &b);
+        if (!success_a || !success_b)
+        {
+            print_runtime_error(instr);
+            exit(1);
+        }
         stack_push(stack, b + a);
         break;
     }
     case CMD_SUB:
     {
-        int a = stack_pop(stack);
-        int b = stack_pop(stack);
+        int a = 0;
+        int b = 0;
+        bool success_a = stack_pop(stack, &a);
+        bool success_b = stack_pop(stack, &b);
+        if (!success_a || !success_b)
+        {
+            print_runtime_error(instr);
+            exit(1);
+        }
         stack_push(stack, b - a);
         break;
     }
     case CMD_MUL:
     {
-        int a = stack_pop(stack);
-        int b = stack_pop(stack);
+        int a = 0;
+        int b = 0;
+        bool success_a = stack_pop(stack, &a);
+        bool success_b = stack_pop(stack, &b);
+        if (!success_a || !success_b)
+        {
+            print_runtime_error(instr);
+            exit(1);
+        }
         stack_push(stack, b * a);
         break;
     }
     case CMD_DIV:
     {
-        int a = stack_pop(stack);
-        int b = stack_pop(stack);
+        int a = 0;
+        int b = 0;
+        bool success_a = stack_pop(stack, &a);
+        bool success_b = stack_pop(stack, &b);
+        if (!success_a || !success_b)
+        {
+            print_runtime_error(instr);
+            exit(1);
+        }
         stack_push(stack, b / a);
         break;
     }
     case CMD_PRINT:
     {
-        fprintf(stdout, "%d\n", stack_pop(stack));
+        int a = 0;
+        bool success = stack_pop(stack, &a);
+        if (!success)
+        {
+            print_runtime_error(instr);
+            exit(1);
+        }
+        fprintf(stdout, "%d\n", a);
         break;
     }
     case CMD_DUPRINT:
     {
-        fprintf(stdout, "%d\n", stack_peak(stack));
+        int dup_val = 0;
+        bool success = stack_peak(stack, &dup_val);
+        if (!success)
+        {
+            fprintf(stderr, "Runtime error at line %zu, file %s\n", instr.file_line, instr.file_name);
+        }
+        fprintf(stdout, "%d\n", dup_val);
         break;
     }
 
@@ -110,7 +177,8 @@ void execute_instruction(vm_t *vm, const instruction_t instr, const symbol_table
     case CMD_JMP:
     case CMD_JZ:
     case CMD_JNZ:
-    // check for valid symbol
+
+    case CMD_CALL:
     {
         int address = symbol_table_find_symbol_address(sym_tab, instr.symbol_name);
         if (address < 0)
@@ -125,16 +193,53 @@ void execute_instruction(vm_t *vm, const instruction_t instr, const symbol_table
         }
         else if (instr.cmd == CMD_JZ)
         {
-            if (stack_pop(stack) == 0)
+            int a = 0;
+            bool success = stack_pop(stack, &a);
+            if (!success)
+            {
+                print_runtime_error(instr);
+                exit(1);
+            }
+            if (a == 0)
                 vm->pc = address;
             break;
         }
         else if (instr.cmd == CMD_JNZ)
         {
-            if (stack_pop(stack) != 0)
+            int a = 0;
+            bool success = stack_pop(stack, &a);
+            if (!success)
+            {
+                print_runtime_error(instr);
+                exit(1);
+            }
+            if (a != 0)
                 vm->pc = address;
             break;
         }
+        else if (instr.cmd == CMD_CALL)
+        {
+            stack_push(call_stack, vm->pc + 1);
+            vm->pc = address;
+            break;
+        }
+    }
+    case CMD_RET:
+    {
+        int a = 0;
+        bool success = stack_pop(call_stack, &a);
+        if (!success)
+        {
+            print_runtime_error(instr);
+            exit(1);
+        }
+        vm->pc = a;
+        break;
+    }
+
+    case CMD_HALT:
+    {
+        exit(0);
     }
 
     default:

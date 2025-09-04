@@ -1,42 +1,44 @@
-; --- Start of program ---
-:main
-PUSH 5
-DUPRINT          ; should print 5, stack still has 5
-PRINT            ; should print 5 again, now stack is empty
+; Subroutine to triple the top of the stack
+:triple
+DUP             ; duplicate top
+DUP             ; duplicate again
+ADD             ; sum top two (original + duplicate)
+ADD             ; sum again to triple
+RET             ; return
 
-; Test NEG and arithmetic
-PUSH 10
-NEG              ; -10
-DUPRINT          ; prints -10
+; Main start somewhere in the middle
+:start
+PUSH 4
+DUPRINT         ; prints 4
+CALL triple     ; jumps to triple
+DUPRINT         ; prints 12
 PUSH 3
-MUL              ; -10 * 3 = -30
-DUPRINT          ; prints -30
-PUSH 7
-ADD              ; -30 + 7 = -23
-DUPRINT          ; prints -23
-
-; Test conditional jumps
+CALL square     ; jumps to square
+DUPRINT         ; prints 9
 PUSH 0
-JZ is_zero       ; should jump to is_zero
-
+JZ skip_halt    ; should jump because 0
 PUSH 111
-PRINT            ; should be skipped
+PRINT           ; skipped
+:skip_halt
+HALT            ; stop program
 
-:is_zero
-PUSH 42
-DUPRINT          ; prints 42
-JMP after_branch ; unconditional jump
+; Square subroutine, placed after main
+:square
+DUP
+MUL
+RET
 
-PUSH 222
-PRINT            ; should be skipped
+; Another test label before start
+:test_branch
+PUSH 7
+JNZ do_call     ; 7 != 0, should jump
+PUSH 999
+PRINT           ; skipped
+:do_call
+CALL triple
+DUPRINT         ; prints 21
 
-:after_branch
-PUSH 9
-JNZ nonzero      ; 9 != 0, so jump to nonzero
-
-PUSH 333
-PRINT            ; should be skipped
-
-:nonzero
-PUSH 77
-DUPRINT          ; prints 77
+; Arbitrary label after HALT (should never execute)
+:never
+PUSH 1
+PRINT

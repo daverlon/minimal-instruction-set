@@ -51,25 +51,30 @@ void stack_push(my_stack_t *stack, int value)
     stack->data[stack->length++] = value;
 }
 
-int stack_pop(my_stack_t *stack)
+bool stack_pop(my_stack_t *stack, int *out)
 {
     if (stack->length <= 0)
     {
         fprintf(stderr, "Attempted to pop empty stack.\n");
-        exit(1);
         return false;
     }
     if (stack->data == NULL)
     {
         fprintf(stderr, "Pop stack attempted to pop NULL data.\n");
-        exit(1);
+        return false;
     }
-    int ret = stack->data[stack->length - 1];
+    *out = stack->data[stack->length - 1];
     stack->length--;
-    return ret;
+    return true;
 }
 
-int stack_peak(my_stack_t *stack)
+bool stack_peak(my_stack_t *stack, int *out)
 {
-    return stack->data[stack->length - 1];
+    if (stack->length <= 0)
+    {
+        fprintf(stderr, "Attempted to peak empty stack.\n");
+        return false;
+    }
+    *out = stack->data[stack->length - 1];
+    return true;
 }

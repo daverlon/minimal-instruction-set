@@ -66,3 +66,5 @@ enum token_type {
 };
 
 extern const char *token_names[];
+
+bool is_reserved_keyword(const char* str);

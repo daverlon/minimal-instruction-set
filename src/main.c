@@ -34,7 +34,8 @@ static void cleanup(void)
 {
     symbol_table_clear(&sym_tab);
     program_clear(&prog);
-    stack_clear(&vm.stack);
+    stack_clear(&vm.data_stack);
+    stack_clear(&vm.call_stack);
     if (vm.file_name != NULL) free(vm.file_name);
     if (f != NULL) fclose(f);
     if (line != NULL) free(line);
@@ -62,7 +63,8 @@ int main(int argc, char *argv[])
     atexit(cleanup);
     
     program_init(&prog);
-    stack_init(&vm.stack);
+    stack_init(&vm.data_stack);
+    stack_init(&vm.data_stack);
     const char *delim = " ;,\t\n";
     size_t size = 0;
 
@@ -94,19 +96,28 @@ int main(int argc, char *argv[])
         }
     }
 
-    int address_main = 0;
     // resolve symbols first
     for (int i = 0; i < prog.length; i++)
     {
         instruction_t *instr = &prog.instructions[i];
         if (instr->cmd == CMD_DEClARE_LABEL)
         {
+            if (symbol_table_find_symbol_address(&sym_tab, instr->symbol_name) != -1)
+            {
+                // symbol already exists
+                fprintf(stderr, "Found existing symbol \"%s\". Repeats are disallowed.\n", instr->symbol_name);
+                exit(1);
+            }
+
             symbol_t sym = {0};
             sym.name = strdup(instr->symbol_name);
             sym.address = i;
             symbol_table_add_symbol(&sym_tab, sym);
 
-            if (!strcmp(sym.name, "main")) address_main = i;
+            if (!strcmp(sym.name, "START")) 
+            {
+                vm.pc = i;
+            }
 
             program_delete_instruction(&prog, i);
         }
