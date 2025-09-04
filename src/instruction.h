@@ -22,7 +22,8 @@
     X(JNZ)   \
     X(CALL)  \
     X(RET)   \
-    X(HALT)
+    X(HALT)  \
+    X(PICK)
 
 enum command_type {
     CMD_INVALID = -1,

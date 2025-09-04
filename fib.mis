@@ -1,0 +1,42 @@
+
+; fibonacci
+
+; start
+; 1,2
+
+; swap   -> 2,1
+; pick 1 -> 2,1,2
+; add    -> 2,3
+
+; swap   -> 3,2
+; pick 1 -> 3,2,3
+; add    -> 3,5
+
+; check limit reached
+; dup    -> i,j,j
+; push   -> i,j,j,55
+; sub    -> i,j,55-j
+; jz     -> i,j,(jmp to end if zero here)
+
+
+:fib
+    dup
+    push 55
+    sub
+    jz end
+
+    swap
+    pick 1
+    add
+    duprint
+    jmp fib
+
+
+:end
+    halt
+
+
+:start
+    push 1
+    push 2
+    call fib

@@ -1,0 +1,24 @@
+
+
+:start
+    call push_items
+    pick 0
+    print
+    pick 1
+    print
+    pick 2
+    print
+    pick 3
+    print
+    pick 4
+    print
+    halt
+
+
+:push_items
+    push 5
+    push 10
+    push 15
+    push 20
+    ret
+

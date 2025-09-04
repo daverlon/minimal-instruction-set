@@ -78,3 +78,15 @@ bool stack_peak(my_stack_t *stack, int *out)
     *out = stack->data[stack->length - 1];
     return true;
 }
+
+bool stack_pick(my_stack_t *stack, size_t n, int *out)
+{
+    if (stack->length - 1 < n || n < 0) 
+    {
+        fprintf(stderr, "Attempted to pick item at position %zu from the top.\n", n);
+        fprintf(stderr, "Stack length is %zu\n", stack->length);
+        return false;
+    }
+    *out = stack->data[stack->length - n - 1];
+    return true;
+}

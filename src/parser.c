@@ -54,6 +54,7 @@ bool parse_token(const char *token, instruction_t *out_instr)
         switch (cmd) 
         {
             case CMD_PUSH: 
+            case CMD_PICK:
             {
                 out_instr->cmd = cmd;
                 expected_token = TOKEN_NUMBER;

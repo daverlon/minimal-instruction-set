@@ -242,6 +242,19 @@ void execute_instruction(vm_t *vm, const instruction_t instr, const symbol_table
         exit(0);
     }
 
+    case CMD_PICK:
+    {
+        int a = 0;
+        bool success = stack_pick(stack, instr.value, &a);
+        if (!success)
+        {
+            print_runtime_error(instr);
+            exit(1);
+        }
+        stack_push(stack, a);
+        break;
+    }
+
     default:
     {
         fprintf(stderr, "Invalid instruction command.\n");
