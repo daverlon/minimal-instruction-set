@@ -1,0 +1,41 @@
+
+
+
+
+:loop
+
+    dup
+    push 50
+    sub
+    jz end
+
+    push 1
+    add
+
+    dup
+    push 2
+    mod
+    jz print_num
+    
+    jmp loop
+
+   
+
+
+
+:print_num
+    duprint
+    jmp loop
+
+
+
+
+
+:start
+    push 50
+    neg
+    duprint
+    call loop
+
+:end
+    halt

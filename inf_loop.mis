@@ -1,0 +1,13 @@
+
+
+:loop
+    duprint
+    push 1
+    add
+    call loop
+    
+
+
+:start
+    push 1
+    call loop
