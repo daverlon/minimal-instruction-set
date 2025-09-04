@@ -183,7 +183,7 @@ void execute_instruction(vm_t *vm, const instruction_t instr, const symbol_table
         int address = symbol_table_find_symbol_address(sym_tab, instr.symbol_name);
         if (address < 0)
         {
-            fprintf(stderr, "Failed to find symbol \"%s\" unknown.", instr.symbol_name);
+            fprintf(stderr, "Failed to find symbol \"%s\" unknown.\n", instr.symbol_name);
             exit(1);
         }
         if (instr.cmd == CMD_JMP)
