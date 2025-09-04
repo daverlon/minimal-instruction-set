@@ -21,9 +21,9 @@
 
 :fib
     dup
-    push 55
+    push 1000
     sub
-    jz end
+    jg end
 
     swap
     pick 1

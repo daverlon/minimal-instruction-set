@@ -12,6 +12,7 @@
     X(PRINT) \
     X(DUPRINT)  \
     X(DUP)   \
+    X(PICK)  \
     X(SWAP)  \
     X(NEG)   \
     X(MOD)   \
@@ -20,10 +21,11 @@
     X(JMP)   \
     X(JZ)    \
     X(JNZ)   \
+    X(JL)    \
+    X(JG)    \
     X(CALL)  \
     X(RET)   \
     X(HALT)  \
-    X(PICK)
 
 enum command_type {
     CMD_INVALID = -1,

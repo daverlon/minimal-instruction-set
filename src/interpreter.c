@@ -177,6 +177,8 @@ void execute_instruction(vm_t *vm, const instruction_t instr, const symbol_table
     case CMD_JMP:
     case CMD_JZ:
     case CMD_JNZ:
+    case CMD_JL:
+    case CMD_JG:
 
     case CMD_CALL:
     {
@@ -214,6 +216,32 @@ void execute_instruction(vm_t *vm, const instruction_t instr, const symbol_table
                 exit(1);
             }
             if (a != 0)
+                vm->pc = address;
+            break;
+        }
+        else if (instr.cmd == CMD_JL)
+        {
+            int a = 0;
+            bool success = stack_pop(stack, &a);
+            if (!success)
+            {
+                print_runtime_error(instr);
+                exit(1);
+            }
+            if (a < 0)
+                vm->pc = address;
+            break;
+        }
+        else if (instr.cmd == CMD_JG)
+        {
+            int a = 0;
+            bool success = stack_pop(stack, &a);
+            if (!success)
+            {
+                print_runtime_error(instr);
+                exit(1);
+            }
+            if (a > 0)
                 vm->pc = address;
             break;
         }

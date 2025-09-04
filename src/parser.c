@@ -87,6 +87,8 @@ bool parse_token(const char *token, instruction_t *out_instr)
             case CMD_JMP:
             case CMD_JZ:
             case CMD_JNZ:
+            case CMD_JL:
+            case CMD_JG:
             {
                 out_instr->cmd = cmd;
                 out_instr->value = 0;
