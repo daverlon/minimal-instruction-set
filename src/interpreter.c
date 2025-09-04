@@ -1,10 +1,13 @@
 #include <stdio.h>
 #include <stdlib.h>
 
+#include "interpreter.h"
+
 #include "vm.h"
 #include "instruction.h"
+#include "program.h"
 
-void execute_instruction(vm_t *vm, const instruction_t instr)
+void execute_instruction(vm_t *vm, const instruction_t instr, const symbol_table_t *sym_tab)
 {
     my_stack_t *stack = &vm->stack;
 
@@ -12,7 +15,7 @@ void execute_instruction(vm_t *vm, const instruction_t instr)
     {
     case CMD_DEClARE_LABEL:
     {
-        fprintf(stdout, "Instruction declare label: %s\n", instr.symbol_name);
+        // fprintf(stdout, "Instruction declare label: %s\n", instr.symbol_name);
         break;
     }
     case CMD_PUSH:
@@ -97,6 +100,43 @@ void execute_instruction(vm_t *vm, const instruction_t instr)
         fprintf(stdout, "%d\n", stack_pop(stack));
         break;
     }
+    case CMD_DUPRINT:
+    {
+        fprintf(stdout, "%d\n", stack_peak(stack));
+        break;
+    }
+
+    // jumps
+    case CMD_JMP:
+    case CMD_JZ:
+    case CMD_JNZ:
+    // check for valid symbol
+    {
+        int address = symbol_table_find_symbol_address(sym_tab, instr.symbol_name);
+        if (address < 0)
+        {
+            fprintf(stderr, "Failed to find symbol \"%s\" unknown.", instr.symbol_name);
+            exit(1);
+        }
+        if (instr.cmd == CMD_JMP)
+        {
+            vm->pc = address;
+            break;
+        }
+        else if (instr.cmd == CMD_JZ)
+        {
+            if (stack_pop(stack) == 0)
+                vm->pc = address;
+            break;
+        }
+        else if (instr.cmd == CMD_JNZ)
+        {
+            if (stack_pop(stack) != 0)
+                vm->pc = address;
+            break;
+        }
+    }
+
     default:
     {
         fprintf(stderr, "Invalid instruction command.\n");

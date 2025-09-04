@@ -7,25 +7,6 @@
 #include "instruction.h"
 #include "interpreter.h"
 
-command_map_t commands[] = {
-    #define MAP_DEF(name) { #name, CMD_##name },
-    COMMAND_LIST(MAP_DEF)
-    #undef MAP_DEF
-};
-
-enum command_type get_command_type(const char *command)
-{
-    int n_commands = sizeof(commands) / sizeof(command_map_t);
-    for (int i = 0; i < n_commands; i++)
-    {
-        if (!strcmp(command, commands[i].name))
-        {
-            return commands[i].type;
-        }
-    }
-    return -1;
-}
-
 bool parse_token(const char *token, instruction_t *out_instr)
 {
     static enum token_type expected_token = TOKEN_LABEL;
@@ -36,13 +17,22 @@ bool parse_token(const char *token, instruction_t *out_instr)
     {
         if (token[0] == ':')
         {
-            fprintf(stdout, "Found label: %s\n", token+1);
+            size_t tklen = sizeof(token);
+            for (size_t c = 1; c < tklen; c++)
+            {
+                if (token[c] == '\0') break;
+                if (!isalnum(token[c]) && token[c] != '_')
+                {
+                    fprintf(stderr, "Expected alphanumerical characters and underscores only for label \"%s\" in line %zu, file %s\n", token+1, out_instr->file_line, out_instr->file_name);
+                    fprintf(stderr, "Found invalid character '%c'\n", token[c]);
+                    exit(1);
+                }
+            }
+            // fprintf(stdout, "Found label: %s\n", token+1);
             out_instr->cmd = CMD_DEClARE_LABEL;
             size_t name_len = strlen(token + 1);
-            if (out_instr->symbol_name != NULL)
-                free(out_instr->symbol_name);
+            if (out_instr->symbol_name != NULL) free(out_instr->symbol_name);
             out_instr->symbol_name = strdup(token+1);
-
             expected_token = TOKEN_COMMAND;
             return true;
         }
@@ -54,7 +44,7 @@ bool parse_token(const char *token, instruction_t *out_instr)
     }
     case TOKEN_COMMAND:
     {
-        enum command_type cmd = get_command_type(token);
+        enum command_type cmd = command_get_type(token);
         
         switch (cmd) 
         {
@@ -70,6 +60,7 @@ bool parse_token(const char *token, instruction_t *out_instr)
             case CMD_MUL:
             case CMD_DIV:
             case CMD_PRINT:
+            case CMD_DUPRINT:
 
             case CMD_DUP:
             case CMD_SWAP:
@@ -83,13 +74,23 @@ bool parse_token(const char *token, instruction_t *out_instr)
                 return true;
             }
 
+            case CMD_JMP:
+            case CMD_JZ:
+            case CMD_JNZ:
+            {
+                out_instr->cmd = cmd;
+                out_instr->value = 0;
+                expected_token = TOKEN_SYMBOL;
+                return false;
+            }
+
             case CMD_INVALID:
             default:
             {
-                fprintf(stderr, "Invalid command found: %s at line %zu in file %s\n", token, out_instr->file_line, out_instr->file_name);
+                fprintf(stderr, "Invalid command found: \"%s\" at line %zu in file %s\n", token, out_instr->file_line, out_instr->file_name);
+                fprintf(stderr, "Expected token: %s\n", token_names[expected_token]);
                 exit(1);
             }
-        
         }
     }
     case TOKEN_NUMBER:
@@ -103,7 +104,13 @@ bool parse_token(const char *token, instruction_t *out_instr)
             }
         }
         out_instr->value = atoi(token);
-        // expected_token = TOKEN_COMMAND;
+        expected_token = TOKEN_LABEL;
+        return true;
+    }
+    // symbol from a jmp command
+    case TOKEN_SYMBOL:
+    {
+        out_instr->symbol_name = strdup(token);
         expected_token = TOKEN_LABEL;
         return true;
     }

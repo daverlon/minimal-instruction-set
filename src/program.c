@@ -1,6 +1,7 @@
 #include "program.h"
 
 #include <stdlib.h>
+#include <memory.h>
 
 #define DEFAULT_SIZE 8
 
@@ -28,6 +29,21 @@ void program_add_instruction(program_t *prog, instruction_t instr)
     prog->length++;
 }
 
+void program_delete_instruction(program_t *prog, int index)
+{
+    if (index >= prog->length)
+    {
+        fprintf(stderr, "Attempted to delete instruction index >= length %zu\n", prog->length);
+        exit(1);
+    }
+    if (prog->instructions[index].symbol_name != NULL)
+        free(prog->instructions[index].symbol_name);
+
+    memmove(&prog->instructions[index], &prog->instructions[index + 1], (prog->length - index - 1) * sizeof(instruction_t));
+
+    prog->length--;
+}
+
 void program_clear(program_t *prog)
 {
     size_t n = prog->length;
@@ -35,7 +51,7 @@ void program_clear(program_t *prog)
     {
         if (prog->instructions[i].symbol_name != NULL)
         {
-            fprintf(stdout, "Destroying %s\n", prog->instructions[i].symbol_name);
+            // fprintf(stdout, "Destroying %s\n", prog->instructions[i].symbol_name);
             free(prog->instructions[i].symbol_name);
         }
     }

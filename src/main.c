@@ -8,12 +8,27 @@
 #include "parser.h"
 #include "interpreter.h"
 #include "symbol.h"
+#include "instruction.h"
 
 static FILE *f = NULL;
 static char *line = NULL;
 static program_t prog = {0};
 static vm_t vm = {0};
 static symbol_table_t sym_tab = {0};
+
+static void print_instruction_debug_msg(instruction_t instr)
+{
+    fprintf(stdout, "Add instruction { ");
+
+    if (instr.cmd == CMD_DEClARE_LABEL || instr.cmd == CMD_JMP)
+        fprintf(stdout, "%s : %s", command_get_name(instr.cmd), instr.symbol_name);
+    else if (instr.cmd == CMD_PUSH)
+        fprintf(stdout, "%s : %d", command_get_name(instr.cmd), instr.value);
+    else
+        fprintf(stdout, "%s", command_get_name(instr.cmd));
+
+    fprintf(stdout, " }\n");
+}
 
 static void cleanup(void)
 {
@@ -60,25 +75,50 @@ int main(int argc, char *argv[])
         if (line[0] == ';' || line[0] == '\n')
             continue;
         char *tok = strtok(line, delim);
+        instruction_t instr = {0};
         while (tok != NULL)
         {
             for (int c = 0; tok[c] != '\0'; c++)
                 tok[c] = toupper(tok[c]);
-            instruction_t instr;
             instr.file_name = vm.file_name;
             instr.file_line = vm.file_line;
             bool ready = parse_token(tok, &instr);
             if (ready)
+            {
+                // print_instruction_debug_msg(instr);
                 program_add_instruction(&prog, instr);
-            // fprintf(stdout, "%s\n", tok);
+                // if (instr.symbol_name != NULL) free(instr.symbol_name);
+            }
+
             tok = strtok(NULL, delim);
         }
     }
 
-    for (vm.pc = 0; vm.pc < prog.length; vm.pc++)
+    int address_main = 0;
+    // resolve symbols first
+    for (int i = 0; i < prog.length; i++)
+    {
+        instruction_t *instr = &prog.instructions[i];
+        if (instr->cmd == CMD_DEClARE_LABEL)
+        {
+            symbol_t sym = {0};
+            sym.name = strdup(instr->symbol_name);
+            sym.address = i;
+            symbol_table_add_symbol(&sym_tab, sym);
+
+            if (!strcmp(sym.name, "main")) address_main = i;
+
+            program_delete_instruction(&prog, i);
+        }
+    }
+
+    // now run
+    while (vm.pc < prog.length)
     {
         instruction_t *instr = &prog.instructions[vm.pc];
-        execute_instruction(&vm, *instr);
+        int x = vm.pc;
+        execute_instruction(&vm, *instr, &sym_tab);
+        if (x == vm.pc) vm.pc++;
     }
 
     exit(0);

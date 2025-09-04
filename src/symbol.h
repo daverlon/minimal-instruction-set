@@ -5,7 +5,7 @@
 #include "program.h"
 
 typedef struct {
-    const char *name; 
+    char *name; 
     size_t address;
 } symbol_t;
 
@@ -14,5 +14,7 @@ typedef struct {
     size_t length;
 } symbol_table_t;
 
-void symbol_table_clear(symbol_table_t *symbol_table);
-void symbol_table_add_symbol(symbol_table_t *symbol_table, symbol_t symbol);
+void symbol_table_clear(symbol_table_t *sym_tab);
+void symbol_table_add_symbol(symbol_table_t *sym_tab, symbol_t symbol);
+
+int symbol_table_find_symbol_address(const symbol_table_t *sym_tab, const char *symbol);

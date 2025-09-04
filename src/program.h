@@ -13,4 +13,5 @@ typedef struct
 
 void program_init(program_t *prog);
 void program_add_instruction(program_t *prog, instruction_t instr);
+void program_delete_instruction(program_t *prog, int index);
 void program_clear(program_t *prog);

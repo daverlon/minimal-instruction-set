@@ -1,39 +1,44 @@
 #include "symbol.h"
 
+#include "string.h"
 #include "stdlib.h"
 
-void symbol_table_clear(symbol_table_t *symbol_table)
+void symbol_table_clear(symbol_table_t *sym_tab)
 {
-    if (symbol_table->symbols != NULL) free(symbol_table->symbols);
-    symbol_table->length = 0;
+    for (size_t i = 0; i < sym_tab->length; i++)
+    {
+        if (sym_tab->symbols[i].name != NULL) free(sym_tab->symbols[i].name);
+    }
+    if (sym_tab->symbols != NULL) free(sym_tab->symbols);
+    sym_tab->length = 0;
 }
 
-void symbol_table_add_symbol(symbol_table_t *symbol_table, symbol_t symbol)
+void symbol_table_add_symbol(symbol_table_t *sym_tab, symbol_t symbol)
 {
-    if (symbol_table->length <= 0)
+    if (sym_tab->length <= 0)
     {
-        symbol_table->symbols = malloc(sizeof(symbol_t));
-        symbol_table->symbols[0] = symbol;
-        symbol_table->length = 1;
+        sym_tab->symbols = malloc(sizeof(symbol_t));
+        sym_tab->symbols[0] = symbol;
+        sym_tab->length = 1;
     }
-    else if (symbol_table->symbols)
+    else if (sym_tab->symbols)
     {
-        symbol_table->symbols = realloc(symbol_table->symbols, sizeof(symbol_t) * (symbol_table->length + 1));
-        symbol_table->symbols[symbol_table->length] = symbol;
-        symbol_table->length++;
+        sym_tab->symbols = realloc(sym_tab->symbols, sizeof(symbol_t) * (sym_tab->length + 1));
+        sym_tab->symbols[sym_tab->length] = symbol;
+        sym_tab->length++;
     }
 }
 
-void symbol_table_resolve_symbols(symbol_table_t *symbol_table, program_t *program)
+int symbol_table_find_symbol_address(const symbol_table_t *sym_tab, const char *symbol)
 {
-    size_t n = program->length - 1;
-    for (size_t i = 0; i < n; i++)
+    ssize_t len = sym_tab->length;
+    for (int i = 0; i < len; i++)
     {
-        instruction_t *instr = &program->instructions[i];
-        if (instr->cmd == CMD_DEClARE_LABEL)
+        if (!strcmp(sym_tab->symbols[i].name, symbol))
         {
-            // symbol_t sym = {instr-}
-            // symbol_table_add_symbol(symbol_table, symbol)
+            int addressOut = sym_tab->symbols[i].address;
+            return addressOut;
         }
     }
+    return -1;
 }

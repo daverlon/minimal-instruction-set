@@ -1,6 +1,7 @@
 #pragma once
 
-#include "stdbool.h"
+#include <stdio.h>
+#include <stdbool.h>
 
 #define COMMAND_LIST(X) \
     X(PUSH)  \
@@ -9,6 +10,7 @@
     X(MUL)   \
     X(DIV)   \
     X(PRINT) \
+    X(DUPRINT)  \
     X(DUP)   \
     X(SWAP)  \
     X(NEG)   \
@@ -35,6 +37,9 @@ typedef struct
     enum command_type type;
 } command_map_t;
 
+enum command_type command_get_type(const char *command);
+const char *command_get_name(enum command_type cmd);
+
 typedef struct
 {
     char* file_name;
@@ -45,12 +50,19 @@ typedef struct
     char *symbol_name;
 } instruction_t;
 
-enum token_type
-{
-    TOKEN_INVALID = -1,
-    TOKEN_COMMAND,
-    TOKEN_NUMBER,
+// Define the list of tokens
+#define TOKEN_LIST(X) \
+    X(INVALID) \
+    X(COMMAND) \
+    X(NUMBER)  \
+    X(LABEL)   \
+    X(SYMBOL)
 
-    TOKEN_LABEL,
-    TOKEN_SYMBOL
+// Define the enum
+enum token_type {
+    #define ENUM_DEF(name) TOKEN_##name,
+    TOKEN_LIST(ENUM_DEF)
+    #undef ENUM_DEF
 };
+
+extern const char *token_names[];

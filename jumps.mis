@@ -1,12 +1,42 @@
+; --- Start of program ---
 :main
-    PUSH 5
-   ; JMP loop
+PUSH 5
+DUPRINT          ; should print 5, stack still has 5
+PRINT            ; should print 5 again, now stack is empty
 
-:loop
-    PUSH 1
-    SUB
-   ; JMPZ end
-   ; JMP loop
+; Test NEG and arithmetic
+PUSH 10
+NEG              ; -10
+DUPRINT          ; prints -10
+PUSH 3
+MUL              ; -10 * 3 = -30
+DUPRINT          ; prints -30
+PUSH 7
+ADD              ; -30 + 7 = -23
+DUPRINT          ; prints -23
 
-:end
-    PRINT
+; Test conditional jumps
+PUSH 0
+JZ is_zero       ; should jump to is_zero
+
+PUSH 111
+PRINT            ; should be skipped
+
+:is_zero
+PUSH 42
+DUPRINT          ; prints 42
+JMP after_branch ; unconditional jump
+
+PUSH 222
+PRINT            ; should be skipped
+
+:after_branch
+PUSH 9
+JNZ nonzero      ; 9 != 0, so jump to nonzero
+
+PUSH 333
+PRINT            ; should be skipped
+
+:nonzero
+PUSH 77
+DUPRINT          ; prints 77
