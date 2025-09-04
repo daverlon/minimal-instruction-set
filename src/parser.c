@@ -65,6 +65,8 @@ bool parse_token(const char *token, instruction_t *out_instr)
             case CMD_SUB:
             case CMD_MUL:
             case CMD_DIV:
+            case CMD_INC:
+            case CMD_DEC:
             case CMD_PRINT:
             case CMD_DUPRINT:
 

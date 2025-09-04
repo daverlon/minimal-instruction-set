@@ -1,0 +1,65 @@
+; --- Program Start ---
+:start
+    PUSH 5
+    PUSH 10
+    ADD
+    DUPRINT          ; 15
+
+    PUSH 3
+    MUL
+    DUPRINT          ; 45
+
+    PUSH 50
+    PUSH 55
+    SUB
+    DUPRINT          ; 5
+    NEG
+    DUPRINT          ; -5
+
+    PUSH 2
+    MOD
+    DUPRINT          ; 1
+
+    INC
+    DUPRINT          ; 2
+    DEC
+    DUPRINT          ; 1
+
+    ; safe PICK (stack has at least 3 elements)
+    PUSH 100
+    PUSH 200
+    PUSH 300
+    PICK 2           ; copy 1st element pushed (100)
+    DUPRINT          ; 100
+
+    CALL subroutine
+    HALT
+
+; --- Conditional Jumps Test ---
+:cond_test
+    PUSH 1
+    NEG              ; make it -1
+    JL less_than
+    JG greater_than
+    JZ equal_zero
+
+:less_than
+    DUPRINT
+    JMP cond_done
+
+:greater_than
+    DUPRINT
+    JMP cond_done
+
+:equal_zero
+    DUPRINT
+
+:cond_done
+    RET
+
+; --- Subroutine ---
+:subroutine
+    DUP
+    ADD
+    DUPRINT
+    RET

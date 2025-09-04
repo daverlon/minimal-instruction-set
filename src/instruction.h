@@ -9,6 +9,8 @@
     X(SUB)   \
     X(MUL)   \
     X(DIV)   \
+    X(INC)   \
+    X(DEC)   \
     X(PRINT) \
     X(DUPRINT)  \
     X(DUP)   \

@@ -149,6 +149,28 @@ void execute_instruction(vm_t *vm, const instruction_t instr, const symbol_table
         stack_push(stack, b / a);
         break;
     }
+    case CMD_INC:
+    {
+        if (stack->length <= 0)
+        {
+            fprintf(stderr, "Attempted to increment top item of empty stack.\n");
+            print_runtime_error(instr);
+            exit(1);
+        }
+        stack->data[stack->length - 1]++;
+        break;
+    }
+    case CMD_DEC:
+    {
+         if (stack->length <= 0)
+        {
+            fprintf(stderr, "Attempted to decrement top item of empty stack.\n");
+            print_runtime_error(instr);
+            exit(1);
+        }
+        stack->data[stack->length - 1]--;
+        break;
+    }
     case CMD_PRINT:
     {
         int a = 0;
