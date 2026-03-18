@@ -1,1 +1,1 @@
-time ./mis input.mis
+time ./mis examples/input.mis
